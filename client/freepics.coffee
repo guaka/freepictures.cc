@@ -65,6 +65,7 @@ Template.hello.events
     action: 'query'
     prop: 'imageinfo'
     iiprop: 'url'
+    iiurlwidth: '300'
     titles: page
   ).done (data) ->
     for key, value of data.query.pages
