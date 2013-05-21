@@ -1,16 +1,56 @@
 
 @linkColor: #fd8901;
 @orange: #fdc8c1;
-@yellow: #ebfc04;
+@yellow: #ebccc4;
 
 
 header {
   background: @orange;
+  border-bottom: 1px dotted @yellow;
 }
 
 
-body {
+#push,
+footer {
+  height: 60px;
+}
+
+/* Wrapper for page content to push down footer */
+#wrap {
+  min-height: 100%;
+  height: auto !important;
+  height: 100%;
+  /* Negative indent footer by it's height */
+  margin: 0 auto -60px;
+}
+
+
+body,
+footer,
+.container {
   width: 100%;
+}
+
+.container {
+  margin-left: auto;
+  margin-right: auto;
+  padding: 20px;
+}
+
+footer {
+  position: fixed;
+  text-align: center;
+  bottom: 0;
+  background-color: @yellow;
+  border-top: 1px dotted @orange;
+}
+
+footer div {
+  padding: 10px;
+}
+
+body {
+  height: 100%;
 }
 
 h1 {
@@ -19,4 +59,11 @@ h1 {
 
 #slogan {
 
+}
+
+.cc-image {
+  padding: 4px 9px;
+  border: 1px solid white;
+  background: #ccc;
+  float: left;
 }
