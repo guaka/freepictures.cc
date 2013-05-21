@@ -21,11 +21,15 @@
 
 
 
-  <ul>
-    {{#each pages}}
-    <li>
-      <a href="http://commons.wikimedia.org/wiki/{{article}}">{{name}}</a> {{page}}
-    </li>
-    {{/each}}
-  </ul>
+  {{#each pages}}
+  <div style="float:left;">
+     <a href="http://commons.wikimedia.org/wiki/{{article}}">
+       <div>
+         <img src="{{url}}" style="height: 300px; width: 350px;" alt="{{name}}" />
+       </div>
+       {{description}}
+     </a>
+  </div>
+  {{/each}}
+
 </template>

@@ -11,7 +11,6 @@ url = 'http://commons.wikimedia.org/w/api.php?callback=?'
 
 @onlyImgs = (s) ->
   matches = s.match(new RegExp('<img.*?>', 'gi'), '$1')
-  console.log matches
   matches
 
 
@@ -21,6 +20,7 @@ Template.hello.pages = ->
     article: p
     name: p.replace 'File:', ''
     page: imagesObj[p] and new Handlebars.SafeString imagesObj[p]
+    url: urls[p]
 
 Meteor.startup ->
   fetchPics()
@@ -46,6 +46,7 @@ Template.hello.events
       fetchPics()
 
 @imagesObj = {}
+@urls = {}
 @fetchImage = (page) ->
   $.getJSON(url,
     format: 'json'
@@ -56,3 +57,18 @@ Template.hello.events
   ).done (data) ->
     imagesObj[page] = onlyImgs data.parse.text['*']
     Session.set 'changed', Meteor.uuid()
+
+
+  # TODO: turn into one query for all pages
+  $.getJSON(url,
+    format: 'json'
+    action: 'query'
+    prop: 'imageinfo'
+    iiprop: 'url'
+    titles: page
+  ).done (data) ->
+    for key, value of data.query.pages
+      urls[page] = value.imageinfo[0].url
+      break
+    Session.set 'changed', Meteor.uuid()
+
