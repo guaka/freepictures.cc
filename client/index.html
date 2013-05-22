@@ -10,7 +10,7 @@
   <!-- view-source:http://twitter.github.io/bootstrap/examples/sticky-footer-navbar.html -->
   <div id="wrap">
 
-    <header>
+    <header class="navbar navbar-fixed-top">
       <div id="logo">
         <img src="http://freepictures.cc/sites/freepictures.cc/files/cc%20orange%20flip-160px.png">
       </div>
@@ -23,20 +23,7 @@
       </div>
     </header>
     
-    <div class="container">
-      <div>
-        {{#each pages}}
-        <div class="cc-image">
-          <a href="http://commons.wikimedia.org/wiki/{{article}}">
-            <div>
-              <img src="{{url}}" style="height: 300px; width: 350px;" alt="{{name}}" />
-            </div>
-            {{description}}
-          </a>
-        </div>
-        {{/each}}
-      </div>
-    </div>
+    {{> images}}
     <div id="push"></div>
   </div>
 

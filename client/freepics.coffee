@@ -14,16 +14,17 @@ url = 'http://commons.wikimedia.org/w/api.php?callback=?'
   matches
 
 
-Template.hello.pages = ->
+Template.images.pages = ->
   Session.get 'changed'
   _.map (Session.get 'data'), (p) ->
     article: p
     name: p.replace 'File:', ''
-    page: imagesObj[p] and new Handlebars.SafeString imagesObj[p]
-    url: urls[p]
+    # page: imagesObj[p] and new Handlebars.SafeString imagesObj[p]
+    thumbUrl: thumbnail images[p]
+    url: images[p]?.url
 
 Meteor.startup ->
-  fetchPics()
+  # fetchPics()
   $('#search').focus()
 
 @fetchPics = ->
@@ -45,18 +46,20 @@ Template.hello.events
       Session.set 'search', $('#search').val()
       fetchPics()
 
+
 @imagesObj = {}
-@urls = {}
+@images = {}
 @fetchImage = (page) ->
-  $.getJSON(url,
-    format: 'json'
-    action: 'parse'
-    prop: 'text'
-    page: page
-    redirects: true
-  ).done (data) ->
-    imagesObj[page] = onlyImgs data.parse.text['*']
-    Session.set 'changed', Meteor.uuid()
+  if false
+    $.getJSON(url,
+      format: 'json'
+      action: 'parse'
+      prop: 'text'
+      page: page
+      redirects: true
+    ).done (data) ->
+      imagesObj[page] = onlyImgs data.parse.text['*']
+      Session.set 'changed', Meteor.uuid()
 
 
   # TODO: turn into one query for all pages
@@ -69,7 +72,21 @@ Template.hello.events
     titles: page
   ).done (data) ->
     for key, value of data.query.pages
-      urls[page] = value.imageinfo[0].url
+      console.log value.imageinfo
+      images[page] = value.imageinfo?[0]
       break
     Session.set 'changed', Meteor.uuid()
 
+
+@thumbnail = (image, width = '350') ->
+  imageUrl = image?.url
+
+  if imageUrl
+    if imageUrl.substr(-4) is '.svg' or
+       image.thumbwidth <= 300
+      imageUrl
+    else
+      split = imageUrl.split '/'
+      thumb = split.slice(0, 5).join '/'
+      thumb += '/thumb/' + split.slice(5).join '/'
+      thumb += '/' + width + 'px-' + split.slice -1

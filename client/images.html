@@ -1,0 +1,18 @@
+<template name="images">
+  <div class="container">
+    <div id="wrapper">
+      <div id="columns">
+        {{#each pages}}
+        <div class="cc-image">
+          <a href="http://commons.wikimedia.org/wiki/{{article}}" class="preview">
+            <div class="pin">
+              <img src="{{thumbUrl}}" style="width: 350px;" alt="{{name}}" />
+            </div>
+            {{description}}
+          </a>
+        </div>
+        {{/each}}
+      </div>
+    </div>
+  </div>
+</template>
