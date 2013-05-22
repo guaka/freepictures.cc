@@ -10,7 +10,7 @@ Meteor.startup ->
   if Session.get 'search'
     fetchPics()
   else
-    random = _.first _.shuffle ['flower', 'cc', 'orange', 'yellow', 'kitten']
+    random = _.first _.shuffle ['flower', 'cc', 'orange', 'yellow', 'kittens']
     fetchPics random
   $('#search').focus()
 
