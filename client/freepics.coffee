@@ -12,7 +12,6 @@ Meteor.startup ->
   else
     random = _.first _.shuffle ['flower', 'cc', 'orange', 'yellow', 'kitten']
     fetchPics random
-    fetchFlickr random
   $('#search').focus()
 
 
@@ -29,6 +28,10 @@ Template.images.pages = ->
 
 Template.images.flickrImages = ->
   fd = Session.get 'flickrData'
+  _.map fd, (p) ->
+    _.extend p,
+      thumbUrl: buildPhotoUrl p
+      origUrl: originalUrl p
 
 Template.main.events
   'keydown #search': (evt) ->
@@ -43,23 +46,27 @@ Template.main.events
 
 
 @fetchPics = (kw = null) ->
+  kw = Session.get 'search' unless kw
+  fetchFlickr kw
+  fetchCommons kw
+
+fetchCommons = (kw) ->
   $.getJSON(url,
     format: 'json'
     action: 'opensearch'
-    search: kw or Session.get 'search'
+    search: kw
     namespace: 6
     limit: 100
   ).done (data) ->
     _.each data[1], (p) ->
-      @fetchImage p
+      @fetchCommonsImg p
     Session.set 'data', data[1]
 
-@flickrData = {}
 
-@fetchFlickr = (kw = null) ->
+@fetchFlickrALL = (kw) ->
   $.getJSON('http://api.flickr.com/services/feeds/photos_public.gne?jsoncallback=?',
     format: 'json'
-    tags: kw or Session.get 'search'
+    tags: kw
     sort: 'interestingness-desc'
     per_page: 100,
     license: [4, 5, 7]
@@ -67,8 +74,46 @@ Template.main.events
     console.log data.items
     Session.set 'flickrData', data.items
 
+@fetchFlickr = (kw) ->
+  $.getJSON('http://api.flickr.com/services/rest/?jsoncallback=?',
+    api_key: flickrApiKey
+    method: 'flickr.photos.search'
+    format: 'json'
+    safe_search: 1
+    tags: kw
+    sort: 'interestingness-desc'
+    per_page: 20,
+    license: '4,5,7'
+  ).done (data) ->
+    console.log data.photos.photo
+    Session.set 'flickrData', data.photos.photo
 
-@fetchImage = (page) ->
+
+# modeled after phpFlickr
+buildPhotoUrl = (photo, size = 'medium') ->
+  sizes =
+    square: '_s'
+    thumbnail: '_t'
+    small: '_m'
+    medium: ''
+    medium_640: '_z'
+    large: '_b'
+    original: '_o'
+  size = 'medium' unless sizes.hasOwnProperty(size)
+
+  if size is 'original'
+    'http://farm' + photo.farm + ".static.flickr.com/" + photo.server + "/" + photo.id + "_" + photo.originalsecret + "_o" + "." + photo.originalformat
+  else
+    'http://farm' + photo.farm + ".static.flickr.com/" + photo.server + "/" + photo.id + "_" + photo.secret + sizes[size] + ".jpg"
+
+
+originalUrl = (photo) ->
+  "http://www.flickr.com/photos/" + photo.owner + '/' + photo.id
+
+
+
+
+@fetchCommonsImg = (page) ->
   # TODO: turn into one query for all pages
   $.getJSON(url,
     format: 'json'
