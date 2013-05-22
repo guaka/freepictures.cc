@@ -19,7 +19,7 @@ Template.images.pages = ->
   _.map (Session.get 'data'), (p) ->
     article: p
     name: p.replace 'File:', ''
-    thumbUrl: thumbnail images[p]
+    thumbUrl: images[p]?.thumburl
     url: images[p]?.url
 
 Template.hello.events
@@ -59,31 +59,9 @@ Template.hello.events
   ).done (data) ->
     for key, value of data.query.pages
       ii = value.imageinfo?[0]
-      if ii and not _.contains ['.tif', 'webm', '.ogv'], ii.url.substr(-4)
+      if ii # and not _.contains ['.tif', 'webm', '.ogv'], ii.url.substr(-4)
         images[page] = ii
       break
     Session.set 'changed', Meteor.uuid()
 
 
-@thumbnail = (image, width = '300') ->
-  imageUrl = image?.url
-
-  if imageUrl
-    ext = imageUrl.substr(-4)
-    if ext is '.svg' or
-       image.thumbwidth < 300
-      imageUrl
-    else
-      split = imageUrl.split '/'
-      thumb = split.slice(0, 5).join '/'
-      thumb += '/thumb/' + split.slice(5).join '/'
-      if ext is 'djvu'
-        thumb += '/page1-' + width + 'px-' + split.slice(-1) + '.jpg'
-      else if ext is '.tif' #???
-        thumb += '/-' + width + 'px-' + split.slice(-1) + '.png'
-      else
-        thumb += '/' + width + 'px-' + split.slice -1
-      thumb
-
-    #  if ext is '.tif'
-    #    thumb += '.png'
