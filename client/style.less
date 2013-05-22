@@ -1,9 +1,10 @@
 
 @linkColor: #fd8901;
-@orange: #fdc8c1;
-@yellow: #e2e5da;
+@orange: #fd6801; // #fdc8c1;
+@yellow: #ebfc04; 
 
 @headerHeight: 80px;
+@footerHeight: 40px;
 
 header {
   background: @orange;
@@ -19,7 +20,7 @@ header {
 
 #push,
 footer {
-  height: 60px;
+  height: @footerHeight;
 }
 
 /* Wrapper for page content to push down footer */
@@ -28,7 +29,7 @@ footer {
   height: auto !important;
   height: 100%;
   /* Negative indent footer by it's height */
-  margin: 0 auto -60px;
+  margin: 0 auto -@footerHeight;
 }
 
 
@@ -61,11 +62,23 @@ body {
 }
 
 h1 {
+  color: @yellow;
   display: inline;
 }
 
+h1 a,
+h1 a:hover {
+  color: @yellow;
+}
+
+
 #slogan {
   padding-left: 20px;
+  font-size: 19px;
+  color: white;
+  word-spacing: 0.1em;
+  font-style: italic;
+  font-family: Georgia, "Times New Roman", Times, serif;
 }
 
 .cc-image {

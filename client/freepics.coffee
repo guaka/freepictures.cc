@@ -24,14 +24,17 @@ Template.images.pages = ->
     url: images[p]?.url
 
 Meteor.startup ->
-  # fetchPics()
+  if Session.get 'search'
+    fetchPics()
+  else
+    fetchPics _.first _.shuffle ['flower', 'cc', 'orange', 'yellow']
   $('#search').focus()
 
-@fetchPics = ->
+@fetchPics = (kw = null) ->
   $.getJSON(url,
     format: 'json'
     action: 'opensearch'
-    search: Session.get 'search'
+    search: kw or Session.get 'search'
     namespace: 6
     limit: 100
   ).done (data) ->
@@ -43,8 +46,12 @@ Meteor.startup ->
 Template.hello.events
   'keydown #search': (evt) ->
     if evt.keyCode is 13
-      Session.set 'search', $('#search').val()
-      fetchPics()
+      kw = $('#search').val()
+      Session.set 'search', kw
+      fetchPics kw
+
+  'click a': (evt) ->
+    $('#search').focus()
 
 
 @imagesObj = {}
@@ -78,15 +85,20 @@ Template.hello.events
     Session.set 'changed', Meteor.uuid()
 
 
-@thumbnail = (image, width = '350') ->
+@thumbnail = (image, width = '300') ->
   imageUrl = image?.url
 
+  console.log image
   if imageUrl
-    if imageUrl.substr(-4) is '.svg' or
-       image.thumbwidth <= 300
+    ext = imageUrl.substr(-4)
+    if ext is '.svg' or
+       image.thumbwidth < 300
       imageUrl
     else
       split = imageUrl.split '/'
       thumb = split.slice(0, 5).join '/'
       thumb += '/thumb/' + split.slice(5).join '/'
       thumb += '/' + width + 'px-' + split.slice -1
+
+    #  if ext is '.tif'
+    #    thumb += '.png'
