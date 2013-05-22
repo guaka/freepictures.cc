@@ -20,6 +20,8 @@ Template.images.pages = ->
     article: p
     name: p.replace 'File:', ''
     thumbUrl: images[p]?.thumburl
+    thumbheight: images[p]?.thumbheight
+    thumbwidth: images[p]?.thumbwidth
     url: images[p]?.url
 
 Template.hello.events
