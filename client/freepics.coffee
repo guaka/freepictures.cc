@@ -10,7 +10,9 @@ Meteor.startup ->
   if Session.get 'search'
     fetchPics()
   else
-    fetchPics _.first _.shuffle ['flower', 'cc', 'orange', 'yellow', 'kitten']
+    random = _.first _.shuffle ['flower', 'cc', 'orange', 'yellow', 'kitten']
+    fetchPics random
+    fetchFlickr random
   $('#search').focus()
 
 
@@ -24,7 +26,11 @@ Template.images.pages = ->
     thumbwidth: images[p]?.thumbwidth
     url: images[p]?.url
 
-Template.hello.events
+
+Template.images.flickrImages = ->
+  fd = Session.get 'flickrData'
+
+Template.main.events
   'keydown #search': (evt) ->
     if evt.keyCode is 13
       kw = $('#search').val()
@@ -47,6 +53,19 @@ Template.hello.events
     _.each data[1], (p) ->
       @fetchImage p
     Session.set 'data', data[1]
+
+@flickrData = {}
+
+@fetchFlickr = (kw = null) ->
+  $.getJSON('http://api.flickr.com/services/feeds/photos_public.gne?jsoncallback=?',
+    format: 'json'
+    tags: kw or Session.get 'search'
+    sort: 'interestingness-desc'
+    per_page: 100,
+    license: [4, 5, 7]
+  ).done (data) ->
+    console.log data.items
+    Session.set 'flickrData', data.items
 
 
 @fetchImage = (page) ->

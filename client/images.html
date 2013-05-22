@@ -1,7 +1,10 @@
+
+
 <template name="images">
   <div class="container">
     <div id="wrapper">
       <div id="columns">
+
         {{#each pages}}
         <div class="cc-image">
           <a href="http://commons.wikimedia.org/wiki/{{article}}" class="preview" target="_blank">
@@ -12,6 +15,17 @@
           </a>
         </div>
         {{/each}}
+
+        {{#each flickrImages}}
+        <div class="cc-image">
+          <a href="{{link}}" target="_blank">
+            <div class="pin">
+              <img src="{{media.m}}" alt="" />
+            </div>
+          </a>
+        </div>
+        {{/each}}
+
       </div>
     </div>
   </div>
