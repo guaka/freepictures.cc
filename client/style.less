@@ -3,7 +3,7 @@
 @orange: #fd6801; // #fdc8c1;
 @yellow: #ebfc04; 
 
-@headerHeight: 80px;
+@headerHeight: 100px;
 @footerHeight: 40px;
 
 header {
@@ -23,6 +23,12 @@ footer {
   height: @footerHeight;
 }
 
+#search {
+  font-size: 26px;
+  height: 30px;
+}
+
+
 /* Wrapper for page content to push down footer */
 #wrap {
   min-height: 100%;
@@ -40,6 +46,7 @@ footer,
 }
 
 .container {
+  margin-top: @headerHeight;
   margin-left: auto;
   margin-right: auto;
   padding: 20px;
