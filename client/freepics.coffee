@@ -1,7 +1,5 @@
 
 
-url = 'http://commons.wikimedia.org/w/api.php?callback=?'
-
 
 @images = {}
 
@@ -10,7 +8,7 @@ Meteor.startup ->
   if Session.get 'search'
     fetchPics()
   else
-    random = _.first _.shuffle ['flower', 'cc', 'orange', 'yellow', 'kittens']
+    random = _.first _.shuffle ['flower', 'cc', 'orange', 'yellow', 'kittens', 'monkey']
     fetchPics random
   $('#search').focus()
 
@@ -24,7 +22,7 @@ Template.images.pages = ->
     thumbheight: images[p]?.thumbheight
     thumbwidth: images[p]?.thumbwidth
     url: images[p]?.url
-
+    # description: 'yo yo'
 
 Template.images.flickrImages = ->
   fd = Session.get 'flickrData'
@@ -50,8 +48,10 @@ Template.main.events
   fetchFlickr kw
   fetchCommons kw
 
+commonsApi = 'http://commons.wikimedia.org/w/api.php?callback=?'
+
 fetchCommons = (kw) ->
-  $.getJSON(url,
+  $.getJSON(commonsApi,
     format: 'json'
     action: 'opensearch'
     search: kw
@@ -69,9 +69,8 @@ fetchCommons = (kw) ->
     tags: kw
     sort: 'interestingness-desc'
     per_page: 100,
-    license: [4, 5, 7]
+    license: [4, 5, 7]   # CC, public domain
   ).done (data) ->
-    console.log data.items
     Session.set 'flickrData', data.items
 
 @fetchFlickr = (kw) ->
@@ -85,7 +84,6 @@ fetchCommons = (kw) ->
     per_page: 20,
     license: '4,5,7'
   ).done (data) ->
-    console.log data.photos.photo
     Session.set 'flickrData', data.photos.photo
 
 
@@ -115,7 +113,7 @@ originalUrl = (photo) ->
 
 @fetchCommonsImg = (page) ->
   # TODO: turn into one query for all pages
-  $.getJSON(url,
+  $.getJSON(commonsApi,
     format: 'json'
     action: 'query'
     prop: 'imageinfo'

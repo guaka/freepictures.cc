@@ -1,4 +1,3 @@
-console.log("Google Plus button");
 (function() {
     var po = document.createElement('script');
     po.type = 'text/javascript';
