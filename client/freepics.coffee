@@ -22,7 +22,7 @@ Template.images.pages = ->
     thumbheight: images[p]?.thumbheight
     thumbwidth: images[p]?.thumbwidth
     url: images[p]?.url
-    # description: 'yo yo'
+    description: images[p]?.description
 
 Template.images.flickrImages = ->
   fd = Session.get 'flickrData'
@@ -125,6 +125,8 @@ originalUrl = (photo) ->
       ii = value.imageinfo?[0]
       if ii # and not _.contains ['.tif', 'webm', '.ogv'], ii.url.substr(-4)
         images[page] = ii
+        desc = 'C ' + value.title.replace 'File:', ''  # @todo more information
+        images[page].description = desc
       break
     Session.set 'changed', Meteor.uuid()
 
