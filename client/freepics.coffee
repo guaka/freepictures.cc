@@ -1,6 +1,5 @@
 
-
-
+# Global is nice for debugging
 @images = {}
 
 
@@ -8,11 +7,17 @@ Meteor.startup ->
   if Session.get 'search'
     fetchPics()
   else
-    random = _.first _.shuffle ['flower', 'cc', 'orange', 'yellow', 'kittens', 'monkey']
+    random = _.first _.shuffle ['flower', 'cc', 'orange'
+                                'yellow', 'kittens', 'monkey'
+                                'roses']
     fetchPics random
   $('#search').focus()
 
 
+# First come template handlers
+
+
+# This should have commons in name
 Template.images.pages = ->
   Session.get 'changed'
   _.map (Session.get 'data'), (p) ->
@@ -62,14 +67,36 @@ fetchCommons = (kw) ->
       @fetchCommonsImg p
     Session.set 'data', data[1]
 
+@fetchCommonsImg = (page) ->
+  # TODO: turn into one query for all pages
+  $.getJSON(commonsApi,
+    format: 'json'
+    action: 'query'
+    prop: 'imageinfo'
+    iiprop: 'url'
+    iiurlwidth: '300'
+    titles: page
+  ).done (data) ->
+    for key, value of data.query.pages
+      ii = value.imageinfo?[0]
+      if ii # and not _.contains ['.tif', 'webm', '.ogv'], ii.url.substr(-4)
+        images[page] = ii
+        desc = value.title.replace 'File:', ''  # @todo more information
+        images[page].description = desc
+      break
+    Session.set 'changed', Meteor.uuid()
 
+
+
+
+# Not used now, leaving for future reference
 @fetchFlickrALL = (kw) ->
   $.getJSON('http://api.flickr.com/services/feeds/photos_public.gne?jsoncallback=?',
     format: 'json'
     tags: kw
     sort: 'interestingness-desc'
     per_page: 100,
-    license: [4, 5, 7]   # CC, public domain
+    license: [4, 5, 7]
   ).done (data) ->
     Session.set 'flickrData', data.items
 
@@ -82,12 +109,12 @@ fetchCommons = (kw) ->
     tags: kw
     sort: 'interestingness-desc'
     per_page: 20,
-    license: '4,5,7'
+    license: '4,5,7'     # CC, public domain
   ).done (data) ->
     Session.set 'flickrData', data.photos.photo
 
 
-# modeled after phpFlickr
+# Helper to get a thumbnail, modeled after phpFlickr
 buildPhotoUrl = (photo, size = 'medium') ->
   sizes =
     square: '_s'
@@ -111,23 +138,5 @@ originalUrl = (photo) ->
 
 
 
-@fetchCommonsImg = (page) ->
-  # TODO: turn into one query for all pages
-  $.getJSON(commonsApi,
-    format: 'json'
-    action: 'query'
-    prop: 'imageinfo'
-    iiprop: 'url'
-    iiurlwidth: '300'
-    titles: page
-  ).done (data) ->
-    for key, value of data.query.pages
-      ii = value.imageinfo?[0]
-      if ii # and not _.contains ['.tif', 'webm', '.ogv'], ii.url.substr(-4)
-        images[page] = ii
-        desc = 'C ' + value.title.replace 'File:', ''  # @todo more information
-        images[page].description = desc
-      break
-    Session.set 'changed', Meteor.uuid()
 
 
