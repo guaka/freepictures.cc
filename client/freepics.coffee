@@ -102,7 +102,7 @@ fetchCommons = (kw) ->
 
 @fetchFlickr = (kw) ->
   $.getJSON('http://api.flickr.com/services/rest/?jsoncallback=?',
-    api_key: flickrApiKey
+    api_key: flickrApiKey if flickrApiKey?
     method: 'flickr.photos.search'
     format: 'json'
     safe_search: 1
